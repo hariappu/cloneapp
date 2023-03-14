@@ -1,0 +1,85 @@
+{%extends 'base.html'%}
+
+{%block body%}
+<!-- my question section -->
+<div class="card text-bg-primary mb-3" style="max-width:100%;">
+    <div class="card-header">
+       <h2 class="text-bg-primary"> {{request.user}}</h2>
+        {%if request.user.profile.profile_pic%}
+        <img src="{{request.user.profile.profile_pic.url}}" class="img-thumbnail rounded-circle" alt="..." height="60px" width="75%">
+
+
+        {%endif%}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">Post Any question</h5>
+      <p class="card-text">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+            <textarea name="description" id="" cols="30" rows="10" class="form-control"></textarea>
+            <button type="submit">Post</button>
+        </form>
+      </p>
+    </div>
+  </div>
+  
+
+
+
+
+
+
+
+<!-- end question section -->
+{%if request.user.profile%}
+<a href="{%url 'profile-detail'%}" class="btn btn-outline-success">Viewprofie</a>
+<a href="{%url 'profile-edit' request.user.profile.id%}" class="btn btn-outline-success">UpdateProfile</a>
+{%else%}
+<a href="{%url 'profile-add'%}">Addprofile</a>
+{%endif%}
+
+
+<div class="container">
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <form action="" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+            {{form.as_p}}
+            <!-- <button type="submit">Add Question</button> -->
+            <button type="submit" class="btn btn-outline-success">Add Question</button>
+        </form>
+    </div>
+    <div class="col-4"></div>
+</div>
+</div>
+<!--question list section start--->
+{%for q in questions%}
+<div>
+{{q.description}}
+{%if q.image%}
+<img src="{{q.image.url}}" alt="">
+{%endif%}
+asked by {{q.user}} on {{q.created_date}}
+</div>
+<div>
+<h5>Add your Answer</h5>
+<form action="{%url 'add-answer' q.id%}" method="post">
+{%csrf_token%}
+<input type="text" placeholder="enter your answer" name="answer">
+<button type="submit">Add</button>
+</form>
+</div>
+<!--answer list section-->
+<h4><u>Answers</u></h4>
+{%for ans in q.question_answers%}
+<div>
+{{ans.answer}} posted by {{ans.user}} on {{ans.created_date}} <a href="{%url 'upvote' ans.id%}">upvote</a>{{ans.upvote_count}}
+</div>
+{%endfor%}
+<!--end answer list-->
+<hr>
+{%endfor%}
+<!---question list session end--->
+
+{%endblock%}
